@@ -1,4 +1,4 @@
-﻿import { claimTask } from '../../api/talent';
+import { claimTask } from '../../api/talent';
 
 const STATUS_CLASS = {
   Open:      'status-badge-Open',
@@ -9,6 +9,10 @@ const STATUS_CLASS = {
 };
 
 const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
+  const due = task.dueDate ? new Date(task.dueDate) : null;
+  if (due) due.setHours(23, 59, 59, 999);
+  const isOverdue = due && due < new Date() && task.status !== 'Approved';
+  const isDueSoon = due && !isOverdue && (due - new Date() <= 86400000) && task.status !== 'Approved';
 
   const handleClaim = async () => {
     try {
@@ -25,11 +29,23 @@ const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
       {/* Header: title + status */}
       <div className="flex items-start justify-between gap-2.5">
         <p className="text-[15px] font-semibold text-text-primary leading-snug">{task.title || 'Untitled Task'}</p>
-        {task.status && (
-          <span className={`shrink-0 inline-block px-2.5 py-[3px] rounded-full text-[11px] font-semibold tracking-[0.3px] ${STATUS_CLASS[task.status] || ''}`}>
-            {task.status}
-          </span>
-        )}
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          {task.status && (
+            <span className={`inline-block px-2.5 py-[3px] rounded-full text-[11px] font-semibold tracking-[0.3px] ${STATUS_CLASS[task.status] || ''}`}>
+              {task.status}
+            </span>
+          )}
+          {isOverdue && (
+            <span className="inline-block px-2 py-[2px] rounded-full text-[9.5px] font-semibold uppercase tracking-[0.5px] badge-overdue">
+              Overdue
+            </span>
+          )}
+          {isDueSoon && (
+            <span className="inline-block px-2 py-[2px] rounded-full text-[9.5px] font-semibold uppercase tracking-[0.5px] badge-due-soon">
+              Due Soon
+            </span>
+          )}
+        </div>
       </div>
 
       

@@ -32,6 +32,7 @@ const fmtDate = (raw) => {
   } catch { return raw; }
 };
 
+
 /* ── Status badge class ── */
 const STATUS_CLASS = {
   Open:      'status-badge-Open',
@@ -127,7 +128,27 @@ const TasksTable = ({ tasks, onEdit, onRefresh }) => {
 
               {/* Due date */}
               <td className="table-td" style={{ color: '#6B7280', whiteSpace: 'nowrap' }}>
-                {fmtDate(task.dueDate)}
+                {(() => {
+                  const due = task.dueDate ? new Date(task.dueDate) : null;
+                  if (due) due.setHours(23, 59, 59, 999);
+                  const isOverdue = due && due < new Date() && task.status !== 'Approved';
+                  const isDueSoon = due && !isOverdue && (due - new Date() <= 86400000) && task.status !== 'Approved';
+                  return (
+                    <div className="flex items-center gap-2">
+                      <span>{fmtDate(task.dueDate)}</span>
+                      {isOverdue && (
+                        <span className="px-2 py-[1px] rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] badge-overdue">
+                          Overdue
+                        </span>
+                      )}
+                      {isDueSoon && (
+                        <span className="px-2 py-[1px] rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] badge-due-soon">
+                          Due Soon
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </td>
 
               {/* Created */}

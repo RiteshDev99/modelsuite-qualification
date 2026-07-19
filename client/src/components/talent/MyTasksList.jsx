@@ -35,6 +35,7 @@ const fmtDate = (raw) => {
   } catch { return raw; }
 };
 
+
 const MyTasksList = ({ tasks, onRefresh }) => {
   const [submitTarget, setSubmitTarget] = useState(null);
 
@@ -61,24 +62,41 @@ const MyTasksList = ({ tasks, onRefresh }) => {
   return (
     <>
       <div className="flex flex-col gap-2">
-        {tasks.map((task, i) => (
-          <div key={task._id}
-            className="task-card table-row-animate"
-            style={{ animationDelay: `${i * 0.06}s` }}>
+        {tasks.map((task, i) => {
+          const due = task.dueDate ? new Date(task.dueDate) : null;
+          if (due) due.setHours(23, 59, 59, 999);
+          const isOverdue = due && due < new Date() && task.status !== 'Approved';
+          const isDueSoon = due && !isOverdue && (due - new Date() <= 86400000) && task.status !== 'Approved';
+          return (
+            <div key={task._id}
+              className="task-card table-row-animate"
+              style={{ animationDelay: `${i * 0.06}s` }}>
 
-            {/* Task info */}
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold truncate mb-0.5"
-                style={{ fontSize: '13.5px', color: '#E5E2E1', fontFamily: 'Inter, sans-serif' }}>
-                {task.title || 'Untitled Task'}
-              </p>
-              {fmtDate(task.dueDate) && (
-                <p className="flex items-center gap-1.5 text-[11.5px]" style={{ color: '#4B5563' }}>
-                  <IconCalendar />
-                  Due {fmtDate(task.dueDate)}
+              {/* Task info */}
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold truncate mb-0.5"
+                  style={{ fontSize: '13.5px', color: '#E5E2E1', fontFamily: 'Inter, sans-serif' }}>
+                  {task.title || 'Untitled Task'}
                 </p>
-              )}
-            </div>
+                {fmtDate(task.dueDate) && (
+                  <div className="flex items-center gap-2 flex-wrap text-[11.5px]" style={{ color: '#4B5563', fontFamily: 'Inter, sans-serif' }}>
+                    <span className="flex items-center gap-1.5">
+                      <IconCalendar />
+                      Due {fmtDate(task.dueDate)}
+                    </span>
+                    {isOverdue && (
+                      <span className="px-2 py-[1px] rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] badge-overdue">
+                        Overdue
+                      </span>
+                    )}
+                    {isDueSoon && (
+                      <span className="px-2 py-[1px] rounded-full text-[9px] font-semibold uppercase tracking-[0.5px] badge-due-soon">
+                        Due Soon
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
@@ -121,7 +139,8 @@ const MyTasksList = ({ tasks, onRefresh }) => {
               )}
             </div>
           </div>
-        ))}
+        );
+      })}
       </div>
 
       {submitTarget && (
