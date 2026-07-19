@@ -26,12 +26,23 @@ const IconUpload = () => (
   </svg>
 );
 
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  if (dateStr instanceof Date) return dateStr;
+  const match = String(dateStr).match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (match) {
+    return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
+  }
+  const d = new Date(dateStr);
+  return isNaN(d) ? null : d;
+};
+
 const fmtDate = (raw) => {
   if (!raw) return null;
   try {
-    const d = new Date(raw);
-    if (isNaN(d)) return raw;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const d = parseLocalDate(raw);
+    if (!d) return raw;
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   } catch { return raw; }
 };
 
@@ -63,7 +74,7 @@ const MyTasksList = ({ tasks, onRefresh }) => {
     <>
       <div className="flex flex-col gap-2">
         {tasks.map((task, i) => {
-          const due = task.dueDate ? new Date(task.dueDate) : null;
+          const due = task.dueDate ? parseLocalDate(task.dueDate) : null;
           if (due) due.setHours(23, 59, 59, 999);
           const isOverdue = due && due < new Date() && task.status !== 'Approved';
           const isDueSoon = due && !isOverdue && (due - new Date() <= 86400000) && task.status !== 'Approved';

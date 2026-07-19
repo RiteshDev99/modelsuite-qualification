@@ -14,7 +14,7 @@ const fmtDate = (raw) => {
   try {
     const d = new Date(raw);
     if (isNaN(d)) return raw;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   } catch { return raw; }
 };
 

@@ -8,8 +8,19 @@ const STATUS_CLASS = {
   Rejected:  'status-badge-Rejected',
 };
 
+const parseLocalDate = (dateStr) => {
+  if (!dateStr) return null;
+  if (dateStr instanceof Date) return dateStr;
+  const match = String(dateStr).match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+  if (match) {
+    return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
+  }
+  const d = new Date(dateStr);
+  return isNaN(d) ? null : d;
+};
+
 const TaskCard = ({ task, showClaimButton = false, onClaimed }) => {
-  const due = task.dueDate ? new Date(task.dueDate) : null;
+  const due = task.dueDate ? parseLocalDate(task.dueDate) : null;
   if (due) due.setHours(23, 59, 59, 999);
   const isOverdue = due && due < new Date() && task.status !== 'Approved';
   const isDueSoon = due && !isOverdue && (due - new Date() <= 86400000) && task.status !== 'Approved';

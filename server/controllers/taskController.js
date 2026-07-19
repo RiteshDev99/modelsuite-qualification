@@ -20,7 +20,7 @@ const getAllTasks = async (req, res) => {
 
 // @desc  Get single task
 // @route GET /api/tasks/:id
-// @access Admin
+// @access Admin, Talent
 const getTaskById = async (req, res) => {
   try {
     // — will throw a CastError from Mongoose instead of a clean 400

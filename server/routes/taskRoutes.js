@@ -9,7 +9,7 @@ const {
 } = require('../controllers/taskController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// All task routes require authentication + Admin role
+// Most task routes require authentication + Admin role; getTaskById allows Talent access with IDOR validation
 router.get('/', protect, adminOnly, getAllTasks);
 router.get('/:id', protect, getTaskById);
 router.post('/', protect, adminOnly, createTask);
