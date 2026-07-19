@@ -69,13 +69,13 @@ const TalentSidebar = () => {
       {/* Footer */}
       <div className="px-3 pb-5">
         <div className="sidebar-divider mb-4" />
-        <div className="flex items-center justify-between gap-2 px-1">
+        <div className="flex flex-col gap-3 px-1">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-full avatar-talent flex items-center justify-center text-[12px] font-bold text-white shrink-0">
               {user?.name?.[0]?.toUpperCase() ?? 'T'}
             </div>
             <div className="min-w-0">
-              <p className="text-[13px] font-semibold truncate max-w-[100px]"
+              <p className="text-[13px] font-semibold truncate"
                 style={{ color: '#E5E2E1', fontFamily: 'Inter, sans-serif' }}>
                 {user?.name}
               </p>
@@ -85,9 +85,9 @@ const TalentSidebar = () => {
 
           <button
             onClick={() => { logout(); navigate('/login'); }}
-            title="Sign out"
             className="logout-btn">
             <IconLogout />
+            <span>Logout</span>
           </button>
         </div>
       </div>
