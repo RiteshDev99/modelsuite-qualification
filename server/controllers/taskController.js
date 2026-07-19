@@ -30,6 +30,11 @@ const getTaskById = async (req, res) => {
 
     if (!task) return res.status(404).json({ message: 'Task not found' });
 
+    if (req.user.role === 'Talent' && task.status !== 'Open') {
+      const assigned = task.assignedTo?._id?.toString() || task.assignedTo?.toString();
+      if (assigned !== req.user._id.toString()) return res.status(403).json({ message: 'Access denied' });
+    }
+
     res.json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
